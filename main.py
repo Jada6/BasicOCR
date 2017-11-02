@@ -1,5 +1,7 @@
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
+
 import math
+import generator
 
 image = None
 SPLIT_NUMBER = 4
@@ -20,10 +22,14 @@ def create_image(name="letter.png", width=20, height=20):
     im.save(name)
 
 
+def load_file(name):
+    image = Image.open(name)
+    return image.convert("1")  # todo: 1, L, ??
+
+
 def read_file(name="letter.png"):
     global image
-    image = Image.open(name)
-    image = image.convert("1", ) # todo: 1, L, ??
+    image = load_file(name)
     return read(image)
 
 
@@ -39,8 +45,7 @@ def read(image):
     return result
 
 
-def find_actual_coords():
-    global image
+def find_actual_coords(image):
     # return image.size
 
     extremes = {'left': image.size[0], 'right': 0, 'top': image.size[1], 'bot': 0}
@@ -65,15 +70,12 @@ def find_actual_coords():
     # return image.histogram()[0]
 
 
-def crop_image():
-    global image
-
-    extremes = find_actual_coords()
-    image = image.crop((extremes['left'], extremes['top'], extremes['right'], extremes['bot']))
+def crop_image(image):
+    extremes = find_actual_coords(image)
+    return image.crop((extremes['left'], extremes['top'], extremes['right'], extremes['bot']))
 
 
-def split_image():
-    global image
+def split_image(image):
     global sub_images
 
     width = image.size[0]
@@ -87,9 +89,18 @@ def split_image():
             list = read(sub_images[x][y])
             sub_images_proportion[x][y] = list['black']/list['white']
 
-    print()
+
+def crop_whole_alphabet():
+    for ascii in range(65, 91):
+        image = load_file("data/alphabet/" + str(chr(ascii)) + ".jpg")
+        image = crop_image(image)
+        image.save("data/alphabet/" + str(chr(ascii)) + ".jpg")
 
 
+generator.create_alphabet()
+crop_whole_alphabet()
+
+'''
 create_image()
 list = read_file("test.png")
 
@@ -112,4 +123,4 @@ for y in range(SPLIT_NUMBER):
 
 
 #for _ in range(len(sub_images))
-
+'''
