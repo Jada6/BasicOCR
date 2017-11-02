@@ -1,7 +1,10 @@
 from PIL import Image
+import math
 
 image = None
-sub_images = [None for _ in range(16)]
+SPLIT_NUMBER = 4
+sub_images = [[[] for _ in range(SPLIT_NUMBER)] for __ in range(SPLIT_NUMBER)]
+sub_images_proportion = [[0 for _ in range(SPLIT_NUMBER)] for __ in range(SPLIT_NUMBER)]
 # actual_picture_coords
 
 
@@ -17,18 +20,22 @@ def create_image(name="letter.png", width=20, height=20):
     im.save(name)
 
 
-def read(name="letter.png"):
-    result = {'white': 0, 'black': 0}
+def read_file(name="letter.png"):
     global image
     image = Image.open(name)
-    image = image.convert("L", ) # todo: 1, L, ??
+    image = image.convert("1", ) # todo: 1, L, ??
+    return read(image)
+
+
+def read(image):
+    result = {'white': 0, 'black': 0}
     width, height = image.size
     for x in range(width - 1):
         for y in range(height - 1):
             r = image.getpixel((x, y))
             result['white' if r == 255 else 'black'] += 1
             # result.append(r)
-    image.show()
+    #image.show()
     return result
 
 
@@ -65,11 +72,44 @@ def crop_image():
     image = image.crop((extremes['left'], extremes['top'], extremes['right'], extremes['bot']))
 
 
-create_image()
-list = read("test.png")
+def split_image():
+    global image
+    global sub_images
 
-print(list['white'])
-print(list['black'])
+    width = image.size[0]
+    height = image.size[1]
+
+    for x in range(SPLIT_NUMBER):
+        for y in range(SPLIT_NUMBER):
+            coords = (((width / SPLIT_NUMBER) * x), ((height / SPLIT_NUMBER) * y),
+                      ((width / SPLIT_NUMBER) * (x + 1)), ((height / SPLIT_NUMBER) * (y + 1)))
+            sub_images[x][y] = image.crop(coords)
+            list = read(sub_images[x][y])
+            sub_images_proportion[x][y] = list['black']/list['white']
+
+    print()
+
+
+create_image()
+list = read_file("test.png")
+
+print("white:", list['white'])
+print("black:", list['black'])
 print(find_actual_coords())
 crop_image()
 image.show()
+
+split_image()
+
+for y in range(SPLIT_NUMBER):
+    for x in range(SPLIT_NUMBER):
+        list = read(sub_images[x][y])
+
+        print(list['white'] + list['black'])
+
+        pass
+        # sub_images[x][y].show()
+
+
+#for _ in range(len(sub_images))
+
