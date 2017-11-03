@@ -1,6 +1,6 @@
 from PIL import Image
 
-SPLIT_NUMBER = 3
+SPLIT_NUMBER = 4
 
 
 def histogram(image):
@@ -12,6 +12,23 @@ def histogram(image):
         for y in range(height):
             r = image.getpixel((x, y))
             result['white' if r == 255 else 'black'] += 1
+    return result
+
+
+def analyze_image(image):
+    result = {'proportion': 0,
+              'subproportions': [[0 for _ in range(SPLIT_NUMBER)] for _ in range(SPLIT_NUMBER)]}
+
+    hist = histogram(image)
+    result['proportion'] = round(100 * hist['black'] / (image.size[0] * image.size[1])) / 100
+
+    subimages = split_image(image)
+
+    for x in range(SPLIT_NUMBER):
+        for y in range(SPLIT_NUMBER):
+            hist = histogram(subimages[x][y])
+            result['subproportions'][x][y] = min((round(100 * hist['black'] / hist['white']) / 100), 2)
+
     return result
 
 
@@ -63,9 +80,9 @@ def load_file(name):
     return image.convert("1")
 
 
-def save_letter_as_image(image, letter):
-    image.save("data/alphabet/" + letter + ".jpg")
+def save_letter_as_image(dir, image, letter):
+    image.save(dir + letter + ".jpg")
 
 
-def load_letter_as_image(letter):
-    return load_file("Data/Alphabet/" + str(chr(letter)) + ".jpg")
+def load_letter_as_image(letter, dir):
+    return load_file(dir + chr(letter) + ".jpg")
