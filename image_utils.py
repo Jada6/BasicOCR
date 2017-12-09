@@ -31,6 +31,7 @@ def analyze_image(image):
         for y in range(SPLIT_NUMBER):
             hist = histogram(subimages[x][y])
             result['subproportions'][x][y] = min((round(100 * hist['black'] / hist['white']) / 100), 2)
+            # why min: proportion bigger then 2 has just I, which proportion is converting to infinity
 
     return result
 
