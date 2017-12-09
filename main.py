@@ -5,7 +5,7 @@ import image_utils
 
 
 def OCR(path):
-    """ Return letter """
+    """ Read and return the most preferable letter from image """
     image = image_utils.load_file(path)
     image = image_utils.crop_image(image)
 
@@ -32,7 +32,7 @@ def OCR(path):
 def test_all_letters(dir):
     for letter in range(26):
         letter += alphabet_generator.ASCII_A
-        print(chr(letter), OCR(dir + chr(letter) + ".jpg"))
+        print(chr(letter) + " " + OCR(dir + chr(letter) + ".jpg"))
 
 
 def read_sentence(dir="Data/Sentence/"):
