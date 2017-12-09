@@ -1,12 +1,13 @@
-from PIL import Image, ImageDraw, ImageFont
+import os
 import json
+from PIL import Image, ImageDraw, ImageFont
 
 import image_utils
 
 ASCII_A = ord('A')
 
 
-def generate_data():
+def generate_reference_data():
     """ Create letters, analyze them and save them """
     print("Creating letters...")
     create_alphabet()
@@ -14,13 +15,15 @@ def generate_data():
     crop_whole_alphabet()
     print("Analyzing alphabet...")
     analyzed = analyze_whole_alphabet()
-    print("Saving as propotions.json")
+    print("Saving as reference_propotions.json...")
     save_analyzed_data(analyzed)
     print("Done")
 
 
 def create_alphabet(dir="Data/Alphabet/", source='Data/arial.ttf'):
     """ Create and save images of every letter of english alphabet """
+    if not os.path.exists(dir):
+        os.makedirs(dir)
     for ascii in range(26):
         ascii += ASCII_A
         create_letter(str(chr(ascii)), dir, source)
@@ -51,19 +54,8 @@ def crop_whole_alphabet(dir="Data/Alphabet/"):
         image_utils.save_letter_as_image(dir, image, chr(ascii))
 
 
-def split_whole_alphabet():
-    """ Return 26 lists containing splitted images """
-    splitted = []
-    for ascii in range(26):
-        ascii += ASCII_A
-        image = image_utils.load_letter_as_image(ascii, "Data/Alphabet/")
-        splitted.append(image_utils.split_image(image))
-    return splitted
-
-
 def analyze_whole_alphabet():
     """ Return list of 26 dictionaries with keys: letter, proportion, subproportions """
-    sub_images = split_whole_alphabet()
     result = [{'letter': '',
                'proportion': 0,
                'subproportions': [[0 for _ in range(image_utils.SPLIT_NUMBER)] for _ in range(image_utils.SPLIT_NUMBER)]}
@@ -71,7 +63,6 @@ def analyze_whole_alphabet():
 
     for letter_index in range(26):
         ascii = letter_index + ASCII_A
-
         result[letter_index]['letter'] = chr(ascii)
 
         image = image_utils.load_letter_as_image(ascii, "Data/Alphabet/")
@@ -84,14 +75,12 @@ def analyze_whole_alphabet():
 
 
 def save_analyzed_data(data):
-    """ Save data as json file """
-    with open("Data/proportions.json", "w") as json_file:
+    with open("Data/reference_proportions.json", "w") as json_file:
         json.dump(data, json_file)
 
 
-def load_data():
-    """ Load data from json file """
-    with open("Data/proportions.json") as fil:
-        data = json.load(fil)
+def load_reference_proportions():
+    with open("Data/reference_proportions.json") as json_file:
+        data = json.load(json_file)
 
     return data

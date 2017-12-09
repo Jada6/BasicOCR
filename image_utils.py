@@ -16,6 +16,9 @@ def histogram(image):
 
 
 def analyze_image(image):
+    """ Return dictionary:
+    proportion: black pixels / all pixels
+    subproportions: list of lists of black/white pixels in splitted images"""
     result = {'proportion': 0,
               'subproportions': [[0 for _ in range(SPLIT_NUMBER)] for _ in range(SPLIT_NUMBER)]}
 
@@ -38,7 +41,6 @@ def find_actual_coords(image):
 
     for x in range(image.size[0]):
         for y in range(image.size[1]):
-            # todo: general color?
             if image.getpixel((x, y)) != 0:
                 continue
 
@@ -76,8 +78,9 @@ def split_image(image):
 
 
 def load_file(name):
+    """ Return opened file in black and white mode """
     image = Image.open(name)
-    return image.convert("1")
+    return image.convert('1', dither=Image.NONE)
 
 
 def save_letter_as_image(dir, image, letter):

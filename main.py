@@ -1,53 +1,54 @@
+import os
+
 import alphabet_generator
 import image_utils
 
 
 def OCR(path):
-    """ Return the most similar letters (sorted) """
+    """ Return letter """
     image = image_utils.load_file(path)
     image = image_utils.crop_image(image)
+
     test_data = image_utils.analyze_image(image)
-    alphabet_data = alphabet_generator.load_data()
+    alphabet_data = alphabet_generator.load_reference_proportions()
 
     difference = [{'letter': '', 'diff': 0} for letter in range(26)]
 
-    for letter in alphabet_data:
-        index_letter = ord(letter['letter']) - alphabet_generator.ASCII_A
+    for reference_letter in alphabet_data:
+        index_letter = ord(reference_letter['letter']) - alphabet_generator.ASCII_A
         temp_diff = 0
 
         for x in range(image_utils.SPLIT_NUMBER):
             for y in range(image_utils.SPLIT_NUMBER):
-                data_letter = alphabet_data[index_letter]
-                temp_diff += pow((test_data['subproportions'][x][y] * data_letter['proportion']
-                                  - data_letter['subproportions'][x][y] * test_data['proportion']), 2)
+                temp_diff += pow((test_data['subproportions'][x][y] * reference_letter['proportion']
+                                  - reference_letter['subproportions'][x][y] * test_data['proportion']), 2)
 
-        difference[index_letter]['letter'] = letter['letter']
+        difference[index_letter]['letter'] = reference_letter['letter']
         difference[index_letter]['diff'] = temp_diff
 
-    return sorted(difference, key=lambda letter: letter['diff'])
+    return sorted(difference, key=lambda letter: letter['diff'])[0]['letter']
 
 
-def test_all_letters():
+def test_all_letters(dir):
     for letter in range(26):
         letter += alphabet_generator.ASCII_A
-        print(chr(letter), OCR("Data/Comic/" + chr(letter) + ".jpg")[0]['letter'])
+        print(chr(letter), OCR(dir + chr(letter) + ".jpg"))
 
 
-def read_sentence(length):
+def read_sentence(dir="Data/Sentence/"):
+    """ Read and return sentence from images in Data/Sentence/[number].jpg"""
+    result = ""
+    length = len(os.listdir(dir))
     for letter in range(length):
-        print(OCR("Data/Sentence/" + str(letter) + ".jpg")[0]['letter'], end="")
+        result += OCR(dir + str(letter) + ".jpg")
+    return result
 
 
-#alphabet_generator.create_comic()
-#alphabet_generator.generate_data()
-#test_all_letters()
+# Can be called just once to generate all needed files
+alphabet_generator.generate_reference_data()
 
-#read_sentence(30)
+# To test it on comic sans
+alphabet_generator.create_comic()
+test_all_letters("Data/Draw/")
 
-#print(OCR("a.jpg")[0]['letter'])
-
-'''
-list_letters = OCR("A.jpg")
-print([list_letters[i]['letter'] for i in range(3)])
-'''
-
+print(read_sentence())
