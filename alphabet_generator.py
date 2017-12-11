@@ -55,10 +55,12 @@ def crop_whole_alphabet(dir="Data/Alphabet/"):
 
 
 def analyze_whole_alphabet():
-    """ Return list of 26 dictionaries with keys: letter, proportion, subproportions """
+    """ Return list of 26 dictionaries with keys:
+    letter, proportion, subproportions """
     result = [{'letter': '',
                'proportion': 0,
-               'subproportions': [[0 for _ in range(image_utils.SPLIT_NUMBER)] for _ in range(image_utils.SPLIT_NUMBER)]}
+               'subproportions': [[0 for _ in range(image_utils.SPLIT_NUMBER)]
+                                  for _ in range(image_utils.SPLIT_NUMBER)]}
               for letter in range(26)]
 
     for letter_index in range(26):

@@ -20,8 +20,11 @@ def OCR(path):
 
         for x in range(image_utils.SPLIT_NUMBER):
             for y in range(image_utils.SPLIT_NUMBER):
-                temp_diff += pow((test_data['subproportions'][x][y] * reference_letter['proportion']
-                                  - reference_letter['subproportions'][x][y] * test_data['proportion']), 2)
+                # The compare function
+                temp_diff += pow((test_data['subproportions'][x][y]
+                                  * reference_letter['proportion']
+                                  - reference_letter['subproportions'][x][y]
+                                  * test_data['proportion']), 2)
 
         difference[index_letter]['letter'] = reference_letter['letter']
         difference[index_letter]['diff'] = temp_diff
@@ -36,7 +39,7 @@ def test_all_letters(dir):
 
 
 def read_sentence(dir="Data/Sentence/"):
-    """ Read and return sentence from images in Data/Sentence/[number].jpg"""
+    """ Read and return sentence from images in Data/Sentence/[number].jpg """
     result = ""
     length = len(os.listdir(dir))
     for letter in range(length):
