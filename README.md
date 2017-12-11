@@ -12,4 +12,4 @@ How it works:
 
 ![How it works](how_it_works.png)
 
-Tested on ComicSans alphabet with 77% accuracy
+Tested on ComicSans font with 80% accuracy and on letters drawn by me (in Data/Draw) with 88% accuracy

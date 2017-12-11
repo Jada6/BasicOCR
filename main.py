@@ -44,11 +44,19 @@ def read_sentence(dir="Data/Sentence/"):
     return result
 
 
-# Can be called just once to generate all needed files
-alphabet_generator.generate_reference_data()
+def main():
+    # Can be called just once to generate all needed files
+    alphabet_generator.generate_reference_data()
 
-# To test it on comic sans
-alphabet_generator.create_comic()
-test_all_letters("Data/Draw/")
+    # Test
+    print("Testing letters drawn by me:")
+    test_all_letters("Data/Draw/")
+    alphabet_generator.create_comic()
+    print("Testing letters of ComicSans font:")
+    test_all_letters("Data/Comic/")
 
-print(read_sentence())
+    print("The sentence is: " + read_sentence())
+
+
+if __name__ == "__main__":
+    main()
